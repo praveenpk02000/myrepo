@@ -1,0 +1,50 @@
+---
+- name : playbook
+  hosts: app
+  become: yes
+  become_user: root
+  tasks:
+    - name: Update package cache
+      yum:
+        name: "*"
+        state: latest
+      tags: update
+
+    - name: Install Apache
+      yum:
+        name: httpd
+        state: latest
+      tags: apache
+
+    - name: Start Apache service
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+      tags: apache
+    
+    - name: "Installing Repo"
+      shell: sudo rpm -Uvh https://repo.mysql.com/mysql57-community-release-sles12-7.noarch.rpm
+      ignore_errors: yes
+    
+    - name: "Installing MySQL 5.7"
+      package: name=mysql* state=present
+      
+    - name: Install PHP and related modules
+      yum:
+        name: "{{ item }}"
+        state: latest
+      with_items:
+        - php
+        - php-mysqld
+        - php-gd
+        - php-xml
+        - php-mbstring
+        - php-cli
+      tags: php
+
+    - name: Restart Apache to enable PHP
+      service:
+        name: httpd
+        state: restarted
+      tags: php

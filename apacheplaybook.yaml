@@ -1,0 +1,18 @@
+---
+- name: Playbook
+  hosts: web
+  become: yes
+  become_user: root
+  tasks:
+    - name: nginx installation with latest version
+      yum:
+        name: httpd
+        state: latest
+    - name: nginx up and running
+      service:
+        name: httpd
+        state: started
+    - name: Deploy web app
+      copy:
+        src: index.html
+        dest: /var/www/html/

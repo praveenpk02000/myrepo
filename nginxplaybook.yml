@@ -1,0 +1,14 @@
+---
+- name: Playbook
+  hosts: web
+  become: yes
+  become_user: root
+  tasks:
+    - name: nginx installation with latest version
+      yum:
+        name: nginx
+        state: latest
+    - name: nginx up and running
+      service:
+        name: nginx
+        state: started
